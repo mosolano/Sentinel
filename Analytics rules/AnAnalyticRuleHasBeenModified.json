@@ -1,0 +1,77 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/60a6cb09-4986-4ef0-81cb-f0c9f047f8a9')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/60a6cb09-4986-4ef0-81cb-f0c9f047f8a9')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2023-12-01-preview",
+            "properties": {
+                "displayName": "An Analytic Rule has been modified",
+                "description": "",
+                "severity": "Informational",
+                "enabled": true,
+                "query": "AzureActivity\n| where OperationNameValue has \"Microsoft.SecurityInsights/alertrules/write\"\n| where ActivityStatusValue has \"Success\"\n| extend AnalyticRuleId = extract(@\"(?i)providers/Microsoft.SecurityInsights/alertrules/([^/]*)\", 1, _ResourceId)\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT5M",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [],
+                "techniques": [],
+                "subTechniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "AlertPerResult"
+                },
+                "alertDetailsOverride": {
+                    "alertDynamicProperties": []
+                },
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "Caller"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "AzureResource",
+                        "fieldMappings": [
+                            {
+                                "identifier": "ResourceId",
+                                "columnName": "_ResourceId"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        }
+    ]
+}
